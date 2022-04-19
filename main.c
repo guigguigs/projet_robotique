@@ -81,11 +81,11 @@ void show_gravity(imu_msg_t *imu_values){
 	palSetPad(GPIOD, GPIOD_LED7);
     if(fabs(acc_x) > fabs(acc_y)){
     	if(acc_x > 0){
-    		palClearPad(GPIOD, GPIOD_LED7);
+    		//palClearPad(GPIOD, GPIOD_LED7);
     		right_motor_set_speed(0);
     		left_motor_set_speed(0);
     	}else{
-    		palClearPad(GPIOD, GPIOD_LED3);
+    		//palClearPad(GPIOD, GPIOD_LED3);
     		right_motor_set_speed(0);
     		left_motor_set_speed(0);
     	}
