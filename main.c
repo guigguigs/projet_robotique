@@ -23,6 +23,7 @@
 
 
 #define NB_SAMPLES_OFFSET     200
+#define MIN_VALUE 	0.2
 
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
@@ -81,14 +82,26 @@ void show_gravity(imu_msg_t *imu_values){
     if(fabs(acc_x) > fabs(acc_y)){
     	if(acc_x > 0){
     		palClearPad(GPIOD, GPIOD_LED7);
-
+    		right_motor_set_speed(0);
+    		left_motor_set_speed(0);
     	}else{
     		palClearPad(GPIOD, GPIOD_LED3);
+    		right_motor_set_speed(0);
+    		left_motor_set_speed(0);
     	}
     }else{
-    	if(acc_y > 0){
+    	if(acc_y < MIN_VALUE && acc_y > -MIN_VALUE){
+    		right_motor_set_speed(0);
+    		left_motor_set_speed(0);
+    		return;
+    	}
+    	if(acc_y < 0){
     		palClearPad(GPIOD, GPIOD_LED5);
+    		right_motor_set_speed(-250);
+			left_motor_set_speed(-250);
     	}else{
+    		right_motor_set_speed(250);
+    		left_motor_set_speed(250);
     		palClearPad(GPIOD, GPIOD_LED1);
     	}
     }
@@ -124,9 +137,9 @@ int main(void)
         //wait for new measures to be published
     	messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
         //prints raw values
-        chprintf((BaseSequentialStream *)&SD3, "%Ax=%-7d Ay=%-7d Az=%-7d Gx=%-7d Gy=%-7d Gz=%-7d\r\n",
-                imu_values.acc_raw[X_AXIS], imu_values.acc_raw[Y_AXIS], imu_values.acc_raw[Z_AXIS],
-                imu_values.gyro_raw[X_AXIS], imu_values.gyro_raw[Y_AXIS], imu_values.gyro_raw[Z_AXIS]);
+//        chprintf((BaseSequentialStream *)&SD3, "%Ax=%-7d Ay=%-7d Az=%-7d Gx=%-7d Gy=%-7d Gz=%-7d\r\n",
+//                imu_values.acc_raw[X_AXIS], imu_values.acc_raw[Y_AXIS], imu_values.acc_raw[Z_AXIS],
+//                imu_values.gyro_raw[X_AXIS], imu_values.gyro_raw[Y_AXIS], imu_values.gyro_raw[Z_AXIS]);
 
         //prints raw values with offset correction
 //        chprintf((BaseSequentialStream *)&SD3, "%Ax=%-7d Ay=%-7d Az=%-7d Gx=%-7d Gy=%-7d Gz=%-7d\r\n",
