@@ -99,6 +99,8 @@ int main(void)
     imu_start();
     motors_init();
     proximity_start();
+    pi_regulator_start();
+
 
     /** Inits the Inter Process Communication bus. */
     messagebus_init(&bus, &bus_lock, &bus_condvar);
@@ -118,21 +120,21 @@ int main(void)
     calibrate_ir();
     int prox = 0;
     while(1){
-
-    	prox = get_prox(3);
-    	//chprintf((BaseSequentialStream *)&SD3, "La distance est %d", prox);
-
-        //wait for new measures to be published
-    	messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
-
-        speed = pi_regulator_int((get_acc(1)/10), 0);
-  //    chprintf((BaseSequentialStream *)&SD3, "la vitesse est %d", speed);
-        if(prox < 80){
-        show_gravity(&imu_values, speed);
-        }else{
-        	show_gravity(&imu_values, 0);
-        }
-        chThdSleepMilliseconds(200);
+//
+//    	prox = get_prox(3);
+//    	//chprintf((BaseSequentialStream *)&SD3, "La distance est %d", prox);
+//
+//        //wait for new measures to be published
+//    	messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
+//
+//    	speed = pi_regulator_int((get_acc(1)/10), 0);
+//  //    chprintf((BaseSequentialStream *)&SD3, "la vitesse est %d", speed);
+//        if(prox < 80){
+//        	show_gravity(&imu_values, speed);
+//        }else{
+//        	show_gravity(&imu_values, 0);
+//        }
+//       chThdSleepMilliseconds(200);
     }
 
 }

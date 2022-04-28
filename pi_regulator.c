@@ -45,7 +45,7 @@ int16_t pi_regulator(float acc, float goal){
 int16_t pi_regulator_int(int16_t acc, int16_t goal){
 
 	int16_t error = 0;
-	float speed = 0;
+	int16_t speed = 0;
 
 	//acc /= 100;
 
@@ -84,7 +84,7 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
     return speed;
 }
 
-static THD_WORKING_AREA(waPiRegulator, 256);
+static THD_WORKING_AREA(waPiRegulator, 1024);
 static THD_FUNCTION(PiRegulator, arg) {
 
     chRegSetThreadName(__FUNCTION__);
@@ -92,15 +92,15 @@ static THD_FUNCTION(PiRegulator, arg) {
 
     systime_t time;
 
-    int16_t speed = 0;
-    int16_t speed_correction = 0;
+    float speed = 0;
+   // int16_t speed_correction = 0;
 
     while(1){
         time = chVTGetSystemTime();
         
         //computes the speed to give to the motors
         //distance_cm is modified by the image processing thread
-        speed = pi_regulator(get_acc(1), GOAL_ACC);
+        speed = pi_regulator_int(get_acc(1)/10, GOAL_ACC);
         //computes a correction factor to let the robot rotate to be in front of the line
  //       speed_correction = (get_line_position() - (IMAGE_BUFFER_SIZE/2));
 
@@ -110,11 +110,12 @@ static THD_FUNCTION(PiRegulator, arg) {
 //        }
 
         //applies the speed from the PI regulator and the correction for the rotation
-		right_motor_set_speed(speed - ROTATION_COEFF * speed_correction);
-		left_motor_set_speed(speed + ROTATION_COEFF * speed_correction);
+		right_motor_set_speed(speed);
+		left_motor_set_speed(speed);
 
         //100Hz
-        chThdSleepUntilWindowed(time, time + MS2ST(10));
+		chThdSleepMilliseconds(200);
+		//chThdSleepUntilWindowed(time, time + MS2ST(10));
     }
 }
 
