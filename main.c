@@ -21,6 +21,7 @@
 #include <i2c_bus.h>
 #include <msgbus/messagebus.h>
 #include <sensors/proximity.h>
+#include <leds.h>
 
 
 #define NB_SAMPLES_OFFSET     200
@@ -95,13 +96,18 @@ int main(void)
     halInit();
     chSysInit();
     serial_start();
-    i2c_start();
-    imu_start();
-    motors_init();
-    proximity_start();
 
     /** Inits the Inter Process Communication bus. */
     messagebus_init(&bus, &bus_lock, &bus_condvar);
+
+    i2c_start();
+    imu_start();
+    motors_init();
+
+    proximity_start();
+    clear_leds();
+    pi_regulator_start();
+
 
     int16_t speed = 0;
     //to change the priority of the thread invoking the function. The main function in this case
@@ -116,23 +122,34 @@ int main(void)
     calibrate_acc();
     calibrate_gyro();
     calibrate_ir();
-    int prox = 0;
-    while(1){
+    int prox_front = 0;
+    int prox_back = 0;
 
-    	prox = get_prox(3);
+    while(1){
+    /*	prox_front = get_prox(3);
+    	prox_back = get_prox(0);
     	//chprintf((BaseSequentialStream *)&SD3, "La distance est %d", prox);
 
-        //wait for new measures to be published
+    	//wait for new measures to be published
     	messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
 
-        speed = pi_regulator_int((get_acc(1)/10), 0);
-  //    chprintf((BaseSequentialStream *)&SD3, "la vitesse est %d", speed);
-        if(prox < 80){
-        show_gravity(&imu_values, speed);
-        }else{
+        speed = pi_regulator_int((imu_values.acc_raw[1]/10), 0);
+
+    // chprintf((BaseSequentialStream *)&SD3, "la lumière est %d", prox_front);
+        if(prox_front > DISTANCE_MIN && speed < 0){
+        	clear_leds();
         	show_gravity(&imu_values, 0);
+        	set_led(LED5,1);
+        }else if(prox_back > DISTANCE_MIN && speed > 0){
+        	clear_leds();
+        	show_gravity(&imu_values, 0);
+        	set_led(LED1,1);
+        }else{
+        	clear_leds();
+        	show_gravity(&imu_values, speed);
         }
-        chThdSleepMilliseconds(200);
+        chThdSleepMilliseconds(100);*/
+
     }
 
 }

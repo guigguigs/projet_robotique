@@ -7,6 +7,9 @@
 
 #include <main.h>
 #include <motors.h>
+#include <sensors/imu.h>
+#include <i2c_bus.h>
+#include <msgbus/messagebus.h>
 #include <pi_regulator.h>
 #include <process_image.h>
 
@@ -47,9 +50,8 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
 	int16_t error = 0;
 	float speed = 0;
 
-	//acc /= 100;
-
 	static int32_t sum_error = 0;
+	static int32_t prev_error = 0;
 
 	error = acc - goal;
 
@@ -70,8 +72,8 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
 		sum_error = -MAX_SUM_ERROR;
 	}
 
-	speed = KP * error + KI * sum_error;
-
+	speed = KP * error + KI * sum_error - KD * (error - prev_error);
+	prev_error = error;
 	if(speed < - MOTOR_SPEED_LIMIT){
 		speed = -MOTOR_SPEED_LIMIT;
 	}else if( speed > MOTOR_SPEED_LIMIT){
@@ -81,10 +83,11 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
 //	}else if(speed < 0 && speed > -150){
 //		speed = -150;
 	}
+
     return speed;
 }
 
-static THD_WORKING_AREA(waPiRegulator, 256);
+static THD_WORKING_AREA(waPiRegulator, 1024);
 static THD_FUNCTION(PiRegulator, arg) {
 
     chRegSetThreadName(__FUNCTION__);
@@ -94,13 +97,25 @@ static THD_FUNCTION(PiRegulator, arg) {
 
     int16_t speed = 0;
     int16_t speed_correction = 0;
-
+    messagebus_topic_t *imu_topic = messagebus_find_topic_blocking(&bus, "/imu");
+    imu_msg_t imu_values;
+    int8_t counter = 0;
+    int16_t values = 0;
     while(1){
         time = chVTGetSystemTime();
-        
+        //wait for new measures to be published
+         messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
+         if(counter < 5){
+        	 //values += imu_values.acc_raw[1]/10;
+        	 ++counter;
+        	// chprintf((BaseSequentialStream *)&SD3, "La distance est %d", counter);
+
+         }else{
+         values = imu_values.acc_raw[1]/10; // / 5;
+         counter = 0;
         //computes the speed to give to the motors
         //distance_cm is modified by the image processing thread
-        speed = pi_regulator(get_acc(1), GOAL_ACC);
+        speed = pi_regulator_int(values, GOAL_ACC);
         //computes a correction factor to let the robot rotate to be in front of the line
  //       speed_correction = (get_line_position() - (IMAGE_BUFFER_SIZE/2));
 
@@ -109,15 +124,17 @@ static THD_FUNCTION(PiRegulator, arg) {
 //        	speed_correction = 0;
 //        }
 
-        //applies the speed from the PI regulator and the correction for the rotation
-		right_motor_set_speed(speed - ROTATION_COEFF * speed_correction);
-		left_motor_set_speed(speed + ROTATION_COEFF * speed_correction);
+        //applies the speed from the PI regulator
+		right_motor_set_speed(speed);
+		left_motor_set_speed(speed);}
 
         //100Hz
-        chThdSleepUntilWindowed(time, time + MS2ST(10));
+    //    chThdSleepUntilWindowed(time, time + MS2ST(100));
+		//chThdSleepMilliseconds(80);
     }
+
 }
 
 void pi_regulator_start(void){
-	chThdCreateStatic(waPiRegulator, sizeof(waPiRegulator), NORMALPRIO, PiRegulator, NULL);
+	chThdCreateStatic(waPiRegulator, sizeof(waPiRegulator), NORMALPRIO +1, PiRegulator, NULL);
 }
