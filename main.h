@@ -15,12 +15,13 @@ extern "C" {
 #define KD						0.1
 #define MAX_SUM_ERROR 			(MOTOR_SPEED_LIMIT/KI)
 #define GOAL_ACC				0.
-#define ERROR_THRESHOLD			20.
+#define ERROR_THRESHOLD			30.
 #define MOTOR_MIN_SPEED 		100
-#define MIN_DISTANCE_VALUE		300
+#define MIN_DISTANCE_VALUE		200
 
 
 void motors_same_speed(int16_t speed);
+
 
 /** Robot wide IPC bus. */
 extern messagebus_t bus;

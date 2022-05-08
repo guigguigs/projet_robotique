@@ -20,46 +20,67 @@
 #include <choc.h>
 
 
-bool detection_wall(int IR1, int IR4/*, int IR5, int IR8*/, int16_t acc){
+static bool arret = false;
+static char cote = 'n';
+
+void set_arret(bool a){
+	arret = a;
+}
+
+bool get_arret(void){
+	return arret;
+}
+
+void set_cote(char a){
+	cote = a;
+}
+
+char get_cote(void){
+	return cote;
+}
+
+bool detection_wall(int IR1, int IR4, int IR5, int IR8, int16_t acc){
 
 	if(IR1 > MIN_DISTANCE_VALUE){
 		if(acc < 0){
-			return false;
+			return 0;
 		}else{
-			return true;
+			set_cote('f');
+			return 1;
 		}
 	}
-
-
-	if(IR4 > MIN_DISTANCE_VALUE){
+	else if(IR4 > MIN_DISTANCE_VALUE){
 		if(acc > 0){
-			return false;
+			return 0;
 		}else{
-			return true;
+			set_cote('b');
+			return 1;
 		}
 	}
 
-/*
-	if(IR8 > MIN_DISTANCE_VALUE){
+
+	else if(IR8 > MIN_DISTANCE_VALUE){
 		if(acc < 0){
-			return false;
+			return 0;
 		}else{
-			return true;
+			set_cote('f');
+			return 1;
 		}
 	}
 
 
-	if(IR5 > MIN_DISTANCE_VALUE){
+	else if(IR5 > MIN_DISTANCE_VALUE){
 		if(acc > 0){
-			return false;
+			return 0;
 		}else{
-			return true;
+			set_cote('b');
+			return 1;
 		}
-	}*/
-	return false;
+	}
+	return 0;
 }
 
-static THD_WORKING_AREA(waChoc, 1024);
+static THD_WORKING_AREA(waChoc, 512);
 static THD_FUNCTION(Choc, arg) {
 
     chRegSetThreadName(__FUNCTION__);
@@ -69,33 +90,23 @@ static THD_FUNCTION(Choc, arg) {
     messagebus_topic_t *imu_topic = messagebus_find_topic_blocking(&bus, "/imu");
     proximity_msg_t prox_values;
     imu_msg_t imu_values;
-    int8_t counter = 0;
 
     while(1){
         //wait for new measures to be published
         messagebus_topic_wait(proximity_topic, &prox_values, sizeof(prox_values));
         messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
 
-		//we take only one value over five
-		if(counter < 5){
-			++counter;
+
+		//we take a tenth of the acceleration recieved to match the speed of the wheel
+		if(detection_wall(prox_values.delta[0], prox_values.delta[3], prox_values.delta[4], prox_values.delta[7], imu_values.acc_raw[1])){
+			set_arret(true);
 		}else{
-
-			counter = 0;
-
-			//we take a tenth of the acceleration recieved to match the speed of the wheel
-			if(detection_wall(prox_values.delta[0], prox_values.delta[3],/* prox_values.delta[4], prox_values.delta[7],*/ imu_values.acc_raw[1])){
-				set_led(LED1,1);
-				arret = true;
-			}else{
-				arret = false;
-				clear_leds();
-			}
+			set_cote('n');
+			set_arret(false);
 		}
-
     }
 }
 
 void choc_start(void){
-	chThdCreateStatic(waChoc, sizeof(waChoc), NORMALPRIO + 1, Choc, NULL);
+	chThdCreateStatic(waChoc, sizeof(waChoc), NORMALPRIO, Choc, NULL);
 }

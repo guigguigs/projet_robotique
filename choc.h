@@ -8,7 +8,12 @@
 #ifndef CHOC_H_
 #define CHOC_H_
 
-static bool arret;
+
+void set_arret(bool a);
+bool get_arret(void);
+
+void set_cote(char a);
+char get_cote(void);
 
 void choc_start(void);
 

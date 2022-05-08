@@ -21,8 +21,9 @@
 #include <sensors/proximity.h>
 #include <leds.h>
 #include <choc.h>
+#include <led_control.h>
 
-extern bool arret;
+
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
@@ -72,7 +73,6 @@ int main(void)
     halInit();
     chSysInit();
     serial_start();
-    arret = false;
     /** Inits the Inter Process Communication bus. */
     messagebus_init(&bus, &bus_lock, &bus_condvar);
 
@@ -103,6 +103,7 @@ int main(void)
     clear_leds();
     //end of calibration
     choc_start();
+    led_test_start();
     pi_regulator_start();
 
 //---------------------Pour calibrer la distance
@@ -114,6 +115,7 @@ int main(void)
 
     while(1){
 //    	calibration_prox(prox1, prox4, prox5, prox8);
+    	//chprintf((BaseSequentialStream *)&SD3, "Je suis dans le MAIN				");
     }
 
 }

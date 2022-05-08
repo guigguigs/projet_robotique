@@ -14,7 +14,17 @@
 #include <choc.h>
 
 
-extern bool arret;
+extern bool get_arret(void);
+static bool no_speed = false;
+
+void set_speed(bool a){
+	no_speed = a;
+}
+
+bool get_speed(void){
+	return no_speed;
+}
+
 
 int16_t pi_regulator_int(int16_t acc, int16_t goal){
 
@@ -78,23 +88,31 @@ static THD_FUNCTION(PiRegulator, arg) {
 
     while(1){
     	//chprintf((BaseSequentialStream *)&SD3, "L'etat d'arret est %d", arret);
-    	if(arret){
-    		motors_same_speed(0);
-    	}else{
+
         //wait for new measures to be published
 			messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
 
-			//we take only one value over five
-			if(counter < 5){
-				++counter;
+			if(get_arret()){
+		    	motors_same_speed(0);
 			}else{
 
-			counter = 0;
+				//we take only one value over five
+				if(counter < 5){
+					++counter;
+				}else{
 
-			//we take a tenth of the acceleration recieved to match the speed of the wheel
-			speed = pi_regulator_int(imu_values.acc_raw[1]/8, GOAL_ACC);
+					counter = 0;
 
-			motors_same_speed(speed);
+					//we take 1/8 of the acceleration recieved to match the speed of the wheel
+
+					speed = pi_regulator_int(imu_values.acc_raw[1]/8, GOAL_ACC);
+					motors_same_speed(speed);
+					if(speed == 0){
+						set_speed(true);
+					}else{
+						set_speed(false);					}
+
+
 			}
 		}
     }
