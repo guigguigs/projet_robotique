@@ -110,8 +110,8 @@ static THD_FUNCTION(PiRegulator, arg) {
 					if(speed == 0){
 						set_speed(true);
 					}else{
-						set_speed(false);					}
-
+						set_speed(false);
+					}
 
 			}
 		}
@@ -120,5 +120,5 @@ static THD_FUNCTION(PiRegulator, arg) {
 }
 
 void pi_regulator_start(void){
-	chThdCreateStatic(waPiRegulator, sizeof(waPiRegulator), NORMALPRIO +1, PiRegulator, NULL);
+	chThdCreateStatic(waPiRegulator, sizeof(waPiRegulator), NORMALPRIO + 1, PiRegulator, NULL);
 }

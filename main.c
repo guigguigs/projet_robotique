@@ -22,6 +22,8 @@
 #include <leds.h>
 #include <choc.h>
 #include <led_control.h>
+#include <audio/play_melody.h>
+#include <audio/audio_thread.h>
 
 
 messagebus_t bus;
@@ -54,6 +56,32 @@ void motors_same_speed(int16_t speed){
 	left_motor_set_speed(speed);
 }
 
+void sequence_demarrage(void){
+	   //wait to stabilize the epuck
+	    chThdSleepMilliseconds(500);
+
+	   //beginning calibration with LED information
+
+	    set_led(LED3,1);
+	    set_led(LED5,1);
+	    set_led(LED7,1);
+	    chThdSleepMilliseconds(500);
+
+
+	    calibrate_acc();
+	    set_led(LED3,0);
+	    calibrate_gyro();
+	    set_led(LED5,0);
+	    calibrate_ir();
+	    set_led(LED7,0);
+	    set_body_led(1);
+
+	    chThdSleepSeconds(1);
+
+	    playMelody(MARIO_START,0,NULL);
+	    waitMelodyHasFinished();
+	    set_body_led(0);
+}
 void calibration_prox(int prox1, int prox4, int prox5, int prox8){
 
 		prox1 = get_prox(0);
@@ -78,29 +106,14 @@ int main(void)
 
     i2c_start();
     imu_start();
+    dac_start();
     motors_init();
     proximity_start();
+    playMelodyStart();
     clear_leds();
 
+    sequence_demarrage(); //calibration et affichage LED
 
-    //wait to stabilize the epuck
-    chThdSleepMilliseconds(1000);
-
-   //beginning calibration with LED information
-
-    set_led(LED3,1);
-    set_led(LED5,1);
-    set_led(LED7,1);
-    chThdSleepMilliseconds(1000);
-
-
-    calibrate_acc();
-    set_led(LED3,0);
-    calibrate_gyro();
-    set_led(LED5,0);
-    calibrate_ir();
-
-    clear_leds();
     //end of calibration
     choc_start();
     led_test_start();

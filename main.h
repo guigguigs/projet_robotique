@@ -11,13 +11,13 @@ extern "C" {
 
 //------------constants used in the project-----------
 #define KP						4
-#define KI 						0.2//must not be zero
+#define KI 						0.4//must not be zero
 #define KD						0.1
 #define MAX_SUM_ERROR 			(MOTOR_SPEED_LIMIT/KI)
 #define GOAL_ACC				0.
-#define ERROR_THRESHOLD			30.
+#define ERROR_THRESHOLD			35.
 #define MOTOR_MIN_SPEED 		100
-#define MIN_DISTANCE_VALUE		200
+#define MIN_DISTANCE_VALUE		150
 
 
 void motors_same_speed(int16_t speed);
