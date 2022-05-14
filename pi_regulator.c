@@ -60,7 +60,7 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
 	prev_error = error;
 
 	//we set speed limit to avoid speeds that could lead
-	//to something we don't want
+	//to something unexpected
 
 	if(speed < - MOTOR_SPEED_LIMIT){
 		speed = -MOTOR_SPEED_LIMIT;
@@ -87,7 +87,6 @@ static THD_FUNCTION(PiRegulator, arg) {
     int8_t counter = 0;
 
     while(1){
-    	//chprintf((BaseSequentialStream *)&SD3, "L'etat d'arret est %d", arret);
 
         //wait for new measures to be published
 			messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
@@ -97,7 +96,7 @@ static THD_FUNCTION(PiRegulator, arg) {
 			}else{
 
 				//we take only one value over five
-				if(counter < 5){
+				if(counter < 3){
 					++counter;
 				}else{
 
@@ -107,14 +106,15 @@ static THD_FUNCTION(PiRegulator, arg) {
 
 					speed = pi_regulator_int(imu_values.acc_raw[1]/8, GOAL_ACC);
 					motors_same_speed(speed);
+
 					if(speed == 0){
 						set_speed(true);
 					}else{
 						set_speed(false);
 					}
 
+				}
 			}
-		}
     }
 
 }

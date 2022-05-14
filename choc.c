@@ -49,6 +49,7 @@ bool detection_wall(int IR1, int IR4, int IR5, int IR8, int16_t acc){
 			return 1;
 		}
 	}
+
 	else if(IR4 > MIN_DISTANCE_VALUE){
 		if(acc > 0){
 			return 0;
@@ -57,6 +58,15 @@ bool detection_wall(int IR1, int IR4, int IR5, int IR8, int16_t acc){
 			return 1;
 		}
 	}
+
+	else if(IR5 > MIN_DISTANCE_VALUE){
+			if(acc > 0){
+				return 0;
+			}else{
+				set_cote('b');
+				return 1;
+			}
+		}
 
 
 	else if(IR8 > MIN_DISTANCE_VALUE){
@@ -69,14 +79,7 @@ bool detection_wall(int IR1, int IR4, int IR5, int IR8, int16_t acc){
 	}
 
 
-	else if(IR5 > MIN_DISTANCE_VALUE){
-		if(acc > 0){
-			return 0;
-		}else{
-			set_cote('b');
-			return 1;
-		}
-	}
+
 	return 0;
 }
 

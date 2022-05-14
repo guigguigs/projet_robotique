@@ -51,11 +51,9 @@ static THD_FUNCTION(LED, arg) {
 						break;
 			case 'f' : 	clear_leds();
 						set_led(LED1,1);
-					//	check_music(&counter_music);
 						break;
 			case 'b' : 	clear_leds();
 						set_led(LED5,1);
-						//check_music(&counter_music);
 						break;
 			}
 

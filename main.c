@@ -31,13 +31,6 @@ MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
 
-void SendUint8ToComputer(uint8_t* data, uint16_t size) 
-{
-	chSequentialStreamWrite((BaseSequentialStream *)&SD3, (uint8_t*)"START", 5);
-	chSequentialStreamWrite((BaseSequentialStream *)&SD3, (uint8_t*)&size, sizeof(uint16_t));
-	chSequentialStreamWrite((BaseSequentialStream *)&SD3, (uint8_t*)data, size);
-}
-
 static void serial_start(void)
 {
 	static SerialConfig ser_cfg = {
@@ -82,6 +75,8 @@ void sequence_demarrage(void){
 	    waitMelodyHasFinished();
 	    set_body_led(0);
 }
+
+//the user can use this function to see the IR information in order to ajust de dist
 void calibration_prox(int prox1, int prox4, int prox5, int prox8){
 
 		prox1 = get_prox(0);
@@ -101,10 +96,10 @@ int main(void)
     halInit();
     chSysInit();
     serial_start();
-    /** Inits the Inter Process Communication bus. */
+    //Inits the Inter Process Communication bus. 
     messagebus_init(&bus, &bus_lock, &bus_condvar);
-
     i2c_start();
+    // Inits the threads
     imu_start();
     dac_start();
     motors_init();
@@ -128,7 +123,6 @@ int main(void)
 
     while(1){
 //    	calibration_prox(prox1, prox4, prox5, prox8);
-    	//chprintf((BaseSequentialStream *)&SD3, "Je suis dans le MAIN				");
     }
 
 }
