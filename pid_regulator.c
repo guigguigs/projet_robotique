@@ -95,7 +95,7 @@ static THD_FUNCTION(PiDRegulator, arg) {
 		    	motors_same_speed(0);
 			}else{
 
-				//we take only one value over five
+				//we take only one value over four
 				if(counter < 3){
 					++counter;
 				}else{
