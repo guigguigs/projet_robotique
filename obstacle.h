@@ -1,8 +1,8 @@
 /*
  * obstacle.h
  *
- *  Created on: 6 mai 2022
- *      Author: gvull
+*  Created on: 6 mai 2022
+ *      Author: Guillaume VULLIOUD & Gael ESCHBACH
  */
 
 #ifndef OBSTACLE_H_

@@ -1,3 +1,10 @@
+/*
+ * pid_regulator.h
+ *
+ *  Created on: 2 mai 2022
+ *      Author: Guillaume VULLIOUD & Gael ESCHBACH inspiré du TP4 de robotique 
+ */
+
 #ifndef PID_REGULATOR_H
 #define PID_REGULATOR_H
 

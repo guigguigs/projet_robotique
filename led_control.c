@@ -2,7 +2,7 @@
  * led_control.c
  *
  *  Created on: 7 mai 2022
- *      Author: gvull
+ *      Author: Guillaume VULLIOUD & Gael ESCHBACH
  */
 
 
@@ -23,15 +23,6 @@ extern bool get_arret(void);
 extern char get_cote(void);		//'n' for 'no info' ||| 	'f' for 'front' |||	'b' for 'back'
 extern bool get_speed(void);
 
-void check_music(uint8_t counter_music){
-	while(counter_music < 10){
-		chThdSleepMilliseconds(200);
-		stopCurrentMelody();
-		++counter_music;
-	}
-	    playMelody(MARIO_DEATH,0,NULL);
-	    counter_music = 0;
-}
 
 static THD_WORKING_AREA(waLED, 512);
 static THD_FUNCTION(LED, arg) {
@@ -40,7 +31,6 @@ static THD_FUNCTION(LED, arg) {
     (void)arg;
     char cote = 'n';
     static uint8_t counter = 0;
-   // static uint8_t counter_music = 0;
     static bool already_played = false;
 
     while(1){
@@ -49,10 +39,10 @@ static THD_FUNCTION(LED, arg) {
 			switch (cote){
 			case 'n' : 	clear_leds();
 						break;
-			case 'f' : 	clear_leds();
+			case 'f' : 	//clear_leds();
 						set_led(LED1,1);
 						break;
-			case 'b' : 	clear_leds();
+			case 'b' : 	//clear_leds();
 						set_led(LED5,1);
 						break;
 			}

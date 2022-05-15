@@ -1,3 +1,10 @@
+/*
+ * main.h
+ *
+ *  Created on: NA
+ *      Author: Tiré du TP4 de robotique 
+ */
+
 #ifndef MAIN_H
 #define MAIN_H
 

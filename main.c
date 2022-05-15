@@ -1,3 +1,10 @@
+/*
+ * main.c
+ *
+ *  Created on: NA
+ *      Author: Tiré du TP4 de robotique 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
