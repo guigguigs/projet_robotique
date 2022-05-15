@@ -16,7 +16,7 @@
 #include <main.h>
 #include <leds.h>
 #include <choc.h>
-#include <pi_regulator.h>
+#include <pid_regulator.h>
 #include <audio\play_melody.h>
 
 extern bool get_arret(void);

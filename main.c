@@ -13,7 +13,7 @@
 #include <motors.h>
 #include <chprintf.h>
 
-#include <pi_regulator.h>
+#include <pid_regulator.h>
 
 #include <sensors/imu.h>
 #include <i2c_bus.h>
@@ -112,7 +112,7 @@ int main(void)
     //end of calibration
     choc_start();
     led_test_start();
-    pi_regulator_start();
+    pid_regulator_start();
 
 //---------------------Pour calibrer la distance
 //    int prox1 = 0;

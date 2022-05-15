@@ -10,7 +10,7 @@
 #include <sensors/imu.h>
 #include <i2c_bus.h>
 #include <msgbus/messagebus.h>
-#include <pi_regulator.h>
+#include <pid_regulator.h>
 #include <choc.h>
 
 
@@ -26,7 +26,7 @@ bool get_speed(void){
 }
 
 
-int16_t pi_regulator_int(int16_t acc, int16_t goal){
+int16_t pid_regulator_int(int16_t acc, int16_t goal){
 
 	int16_t error = 0;
 	float speed = 0;
@@ -75,8 +75,8 @@ int16_t pi_regulator_int(int16_t acc, int16_t goal){
     return speed;
 }
 
-static THD_WORKING_AREA(waPiRegulator, 1024);
-static THD_FUNCTION(PiRegulator, arg) {
+static THD_WORKING_AREA(waPiDRegulator, 1024);
+static THD_FUNCTION(PiDRegulator, arg) {
 
     chRegSetThreadName(__FUNCTION__);
     (void)arg;
@@ -104,7 +104,7 @@ static THD_FUNCTION(PiRegulator, arg) {
 
 					//we take 1/8 of the acceleration recieved to match the speed of the wheel
 
-					speed = pi_regulator_int(imu_values.acc_raw[1]/8, GOAL_ACC);
+					speed = pid_regulator_int(imu_values.acc_raw[1]/8, GOAL_ACC);
 					motors_same_speed(speed);
 
 					if(speed == 0){
@@ -119,6 +119,6 @@ static THD_FUNCTION(PiRegulator, arg) {
 
 }
 
-void pi_regulator_start(void){
-	chThdCreateStatic(waPiRegulator, sizeof(waPiRegulator), NORMALPRIO + 1, PiRegulator, NULL);
+void pid_regulator_start(void){
+	chThdCreateStatic(waPiDRegulator, sizeof(waPiDRegulator), NORMALPRIO + 1, PiDRegulator, NULL);
 }

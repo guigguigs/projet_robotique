@@ -100,7 +100,6 @@ static THD_FUNCTION(Choc, arg) {
         messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
 
 
-		//we take a tenth of the acceleration recieved to match the speed of the wheel
 		if(detection_wall(prox_values.delta[0], prox_values.delta[3], prox_values.delta[4], prox_values.delta[7], imu_values.acc_raw[1])){
 			set_arret(true);
 		}else{
