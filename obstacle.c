@@ -17,7 +17,7 @@
 #include <msgbus/messagebus.h>
 #include <sensors/proximity.h>
 #include <leds.h>
-#include <choc.h>
+#include <obstacle.h>
 
 
 static bool arret = false;
@@ -83,8 +83,8 @@ bool detection_wall(int IR1, int IR4, int IR5, int IR8, int16_t acc){
 	return 0;
 }
 
-static THD_WORKING_AREA(waChoc, 512);
-static THD_FUNCTION(Choc, arg) {
+static THD_WORKING_AREA(waObstacle, 512);
+static THD_FUNCTION(Obstacle, arg) {
 
     chRegSetThreadName(__FUNCTION__);
     (void)arg;
@@ -109,6 +109,6 @@ static THD_FUNCTION(Choc, arg) {
     }
 }
 
-void choc_start(void){
-	chThdCreateStatic(waChoc, sizeof(waChoc), NORMALPRIO, Choc, NULL);
+void obstacle_start(void){
+	chThdCreateStatic(waObstacle, sizeof(waObstacle), NORMALPRIO, Obstacle, NULL);
 }

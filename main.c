@@ -20,7 +20,7 @@
 #include <msgbus/messagebus.h>
 #include <sensors/proximity.h>
 #include <leds.h>
-#include <choc.h>
+#include <obstacle.h>
 #include <led_control.h>
 #include <audio/play_melody.h>
 #include <audio/audio_thread.h>
@@ -110,7 +110,7 @@ int main(void)
     sequence_demarrage(); //calibration et affichage LED
 
     //end of calibration
-    choc_start();
+    obstacle_start();
     led_test_start();
     pid_regulator_start();
 
