@@ -1,7 +1,7 @@
 /*
  * obstacle.c
  *
-*  Created on: 6 mai 2022
+ *  Created on: 6 mai 2022
  *      Author: Guillaume VULLIOUD & Gael ESCHBACH
  */
 #include "ch.h"

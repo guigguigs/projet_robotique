@@ -2,7 +2,7 @@
  * led_control.h
  *
  *  Created on: 7 mai 2022
- *      Author: gvull
+ *      Author: Guillaume VULLIOUD & Gael ESCHBACH
  */
 
 #ifndef LED_CONTROL_H_

@@ -1,3 +1,10 @@
+/*
+ * pid_regulator.c
+ *
+ *  Created on: 2 mai 2022
+ *      Author: Guillaume VULLIOUD & Gael ESCHBACH inspiré du TP4 de robotique 
+ */
+
 #include "ch.h"
 #include "hal.h"
 #include <math.h>
